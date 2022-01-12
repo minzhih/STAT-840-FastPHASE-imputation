@@ -15,3 +15,13 @@
 4. Vary P and report percent correct for BEAGLE's imputation.
 
 I think this is achievable, but if you run into negative results or problems that you really can't solve, feel free to deviate from the path, or let me know and I'll chart a new path with you. Also, if you finish this and want to do more, you could do step 4 but with more than one method (i.e., compare BEAGLE to SHAPEIT4).
+
+Accuracy = % of question marks that are filled in correctly.
+
+Goals:
+
+Question 1: How does accracy vary as %missing (missing at random) varies? Do some number of replicates per %missing condition. Vary %missing from 10% to 90%. a) For fastPHASE? (Achieved) b) For BEAGLE? 
+
+Question 2: How do rare variants / reference panel mismatch affect %correct?
+
+Question 3: Is there some kind of statistical method we could develop so that rare variants in the study panel can be detected? (Or more generally, if we KNOW there's a mismatch, can we do something to improve?) Maybe something can be done with the proir in a Bayseian model? Kind of like shrinkage.
