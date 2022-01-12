@@ -1,0 +1,619 @@
+---
+title: "Stat840"
+output: html_document
+---
+
+```{r}
+## Input file format converting code
+
+library(stringr)
+# prepare regular expression
+regexp <- "[[:digit:]]+"
+regexp2<-"^.*[a-zA-Z]{2}"
+
+## data read-in
+my_data<-read.delim("tunft.prettybase.txt",header =FALSE)
+my_data1<-my_data
+names(my_data1)[1] <- "Position"
+names(my_data1)[2] <- "PGA Sample ID"
+names(my_data1)[3] <- "Allele1"
+names(my_data1)[4] <- "Allele2"
+
+
+my_data1$Position<-str_extract(my_data1$Position, regexp)
+my_data1$Position<-as.numeric(my_data1$Position)
+HLA<-my_data1
+HLA[HLA[,"Allele1"]=="N",c(3,4)]<-"?"
+Position<-unique(HLA$Position)
+  
+## Covert data into 0, 1 format, with 1 is the base (ATGC) has higher frequency
+for (i in 1:24)
+{
+  temdata<-HLA[HLA$Position==Position[i],]
+  ##Drop all the missing alleles 
+  a<-unique(HLA[HLA$Position==Position[i],"Allele1"])
+  a<-a[a!="?"]
+  b<-unique(HLA[HLA$Position==Position[i],"Allele2"])
+  b<-b[b!="?"]
+  ## Find types of bases
+  a2<-gsub("^(.*?),.*", "\\1",toString(a))
+  b2<-str_trim(sub("^[^,]*,", "", toString(a)))
+  a3<-gsub("^(.*?),.*", "\\1", toString(b))
+  b3<-str_trim(sub("^[^,]*,", "", toString(b)))
+  for (j in 1:nrow(temdata))
+  {
+    if(temdata$Allele1[j]!="?"){
+      ## Separate single allelic and multi allelic
+      if((grepl(regexp2,a2)|grepl(regexp2,b2)|grepl(regexp2,a3)|grepl(regexp2,b3))=="FALSE")
+      {
+        if(length(a)<length(b)){
+          a<-b
+          }else
+          {
+            b<-a
+          }
+          temdata<-HLA[HLA$Position==Position[i],]
+          count1<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],])
+          count2<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],])
+          count3<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],])
+          count4<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],])
+          count13<-(count1+count3)
+          count24<-(count2+count4)
+          if(count13>count24)
+          {
+            temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],3]<-0
+            temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],4]<-0
+            temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],3]<-1
+            temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],4]<-1
+          }else
+          {
+          temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],3]<-1
+          temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],4]<-1
+          temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],3]<-0
+          temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],4]<-0
+          }
+      
+     }else{
+        if(length(a)<length(b)){
+           a<-b
+        }else
+        {
+          b<-a
+        }
+        temdata<-HLA[HLA$Position==Position[i],]
+        count1<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],])
+        count2<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],])
+        count3<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],])
+        count4<-nrow(temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],])
+        count13<-(count1+count3)
+        count24<-(count2+count4)
+        if(count13>count24)
+        {
+            temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],3]<-0
+            temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],4]<-0
+            temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],3]<-1
+            temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],4]<-1
+        }else
+        {
+          temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[1],3]<-1
+          temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[1],4]<-1
+          temdata[HLA[HLA$Position==Position[i],"Allele1"]%in%a[2],3]<-0
+          temdata[HLA[HLA$Position==Position[i],"Allele2"]%in%a[2],4]<-0
+        }
+      }
+     }
+  } 
+    HLA[HLA$Position==Position[i],]<-temdata 
+}
+
+
+## 
+readin<-as.data.frame(matrix(nrow=94,ncol=26))
+
+
+  d<-seq(1, by = 2, len = 47)
+  
+  readin[d,2]<-paste(unique(HLA$`PGA Sample ID`),"A")
+  readin[d+1,2]<-paste(unique(HLA$`PGA Sample ID`),"B")
+
+  readin[1,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[1],3]
+  readin[2,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[1],4]
+  readin[3,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[2],3]
+  readin[4,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[2],4]
+  readin[5,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[3],3]
+  readin[6,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[3],4]
+  readin[7,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[4],3]
+  readin[8,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[4],4]
+  readin[9,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[5],3]
+  readin[10,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[5],4]
+  readin[11,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[6],3]
+  readin[12,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[6],4]
+  readin[13,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[7],3]
+  readin[14,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[7],4]
+  readin[15,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[8],3]
+  readin[16,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[8],4]
+  readin[17,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[9],3]
+  readin[18,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[9],4]
+  readin[19,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[10],3]
+  readin[20,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[10],4]
+  readin[21,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[11],3]
+  readin[22,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[11],4]
+  readin[23,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[12],3]
+  readin[24,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[12],4]
+  readin[25,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[13],3]
+  readin[26,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[13],4]
+  readin[27,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[14],3]
+  readin[28,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[14],4]
+  readin[29,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[15],3]
+  readin[30,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[15],4]
+  readin[31,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[16],3]
+  readin[32,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[16],4]
+  readin[33,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[17],3]
+  readin[34,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[17],4]
+  readin[35,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[18],3]
+  readin[36,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[18],4]
+  readin[37,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[19],3]
+  readin[38,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[19],4]
+  readin[39,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[20],3]
+  readin[40,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[20],4]
+  readin[41,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[21],3]
+  readin[42,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[21],4]
+  readin[43,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[22],3]
+  readin[44,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[22],4]
+  readin[45,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[23],3]
+  readin[46,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[23],4]
+  readin[47,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[24],3]
+  readin[48,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[24],4]
+  readin[49,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[25],3]
+  readin[50,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[25],4]
+  readin[51,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[26],3]
+  readin[52,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[26],4]
+  readin[53,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[27],3]
+  readin[54,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[27],4]
+  readin[55,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[28],3]
+  readin[56,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[28],4]
+  readin[57,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[29],3]
+  readin[58,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[29],4]
+  readin[59,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[30],3]
+  readin[60,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[30],4]
+  readin[61,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[31],3]
+  readin[62,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[31],4]
+  readin[63,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[32],3]
+  readin[64,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[32],4]
+  readin[65,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[33],3]
+  readin[66,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[33],4]
+  readin[67,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[34],3]
+  readin[68,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[34],4]
+  readin[69,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[35],3]
+  readin[70,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[35],4]
+  readin[71,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[36],3]
+  readin[72,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[36],4]
+  readin[73,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[37],3]
+  readin[74,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[37],4]
+  readin[75,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[38],3]
+  readin[76,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[38],4]
+  readin[77,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[39],3]
+  readin[78,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[39],4]
+  readin[79,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[40],3]
+  readin[80,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[40],4]
+  readin[81,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[41],3]
+  readin[82,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[41],4]
+  readin[83,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[42],3]
+  readin[84,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[42],4]
+  readin[85,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[43],3]
+  readin[86,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[43],4]
+  readin[87,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[44],3]
+  readin[88,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[44],4]
+  readin[89,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[45],3]
+  readin[90,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[45],4]
+  readin[91,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[46],3]
+  readin[92,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[46],4]
+  readin[93,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[47],3]
+  readin[94,3:26]<-HLA[HLA$`PGA Sample ID`==unique(HLA$`PGA Sample ID`)[47],4]
+  
+  readin<-readin[,-c(1)]
+  
+  
+##  write.table(readin, file = "read_in.txt",row.names = FALSE)
+
+```
+
+
+```{r}
+##  P = 10% to P=90%
+rowSums((readin=="?"))
+## Check how many question mark there is 
+## 102
+## The row with more question mark will have less masked rate
+read2<-readin
+colSums(read2== "?", na.rm = TRUE)
+sum(colSums(read2== "?", na.rm = TRUE))
+
+## Remove genotype that have missing rate larger than 15% in reference panel
+## Which is have rowSums((readin=="?")) more than 4
+
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2[id,]
+##Build Truth for later checking
+Truth<-read2
+
+## Following rounding
+## P = 10%
+## 24*41=984 genotype
+## (24*41)*0.1=98 masked
+#26*2+15*3=97
+## fixed masked position (in order)
+#set.seed(123)
+#set.seed(483)
+#set.seed(803)
+#set.seed(904)
+#set.seed(744)
+read2<-read2[,-1]
+d<-seq(1, by = 2, len = 41)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:26)){
+    id<-sample(1:24,2, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,3, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in10%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 20%
+##(24*41)*0.2=196.8 masked 
+##5*31=155
+##10*4=40
+read2<-readin
+sum(colSums(read2== "?", na.rm = TRUE))
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(231)
+#set.seed(678)
+#set.seed(888)
+#set.seed(1242)
+set.seed(556)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:31)){
+    id<-sample(1:24,5, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,4, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+
+write.table(read2, file = "read_in20%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 30%
+## (24*41)*0.3=295
+## 7*32+8*9=296
+read2<-readin
+sum(colSums(read2== "?", na.rm = TRUE))
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(431)
+#set.seed(489)
+#set.seed(8345)
+#set.seed(900)
+set.seed(1010)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:32)){
+    id<-sample(1:24,7, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,8, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+
+write.table(read2, file = "read_in30%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 40%
+## (24*41)*0.4=393 masked 
+## 10*25+9*16=394
+
+read2<-readin
+sum(colSums(read2== "?", na.rm = TRUE))
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(314)
+#set.seed(478)
+#set.seed(1902)
+#set.seed(730)
+set.seed(348)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:25)){
+    id<-sample(1:24,10, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,9, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+
+write.table(read2, file = "read_in40%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 50%
+## (24*41)*0.5 =492 masked
+## 12*40+11*1=491
+read2<-readin
+sum(colSums(read2== "?", na.rm = TRUE))
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+set.seed(356)
+#set.seed(698)
+#set.seed(1234)
+#set.seed(444)
+#set.seed(892)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:40)){
+    id<-sample(1:24,12, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,11, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in50%1.txt",row.names = FALSE,quote = FALSE)
+20.22-10.57
+## P = 60%
+## (24*41)*0.6 =590 masked
+## 14*24=336 15*17=255
+read2<-readin
+sum(colSums(read2== "?", na.rm = TRUE))
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+#set.seed(356)
+#set.seed(760)
+#set.seed(699)
+#set.seed(850)
+set.seed(930)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:24)){
+    id<-sample(1:24,14, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,15, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in60%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 70%
+## (24*41)*0.7 =688 masked
+## 16*9+17*32
+
+read2<-readin
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(356)
+#set.seed(689)
+#set.seed(900)
+#set.seed(833)
+set.seed(645)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:9)){
+    id<-sample(1:24,16, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,17, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in70%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 80%
+## (24*41)*0.8 =787 masked
+## 19*33+20*8
+
+read2<-readin
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(356)
+#set.seed(236)
+#set.seed(876)
+#set.seed(796)
+set.seed(888)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:33)){
+    id<-sample(1:24,19, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,20, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in80%5.txt",row.names = FALSE,quote = FALSE)
+
+## P = 90%
+## (24*41)*0.9 =886 masked
+## 21*16+22*25
+read2<-readin
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2<-read2[,-1]
+
+#set.seed(356)
+#set.seed(480)
+#set.seed(888)
+#set.seed(960)
+set.seed(720)
+for (i in 1:41)
+{ 
+  if(i%in%c(1:16)){
+    id<-sample(1:24,21, replace = FALSE)
+    read2[d[i],id] <-"?"
+    read2[d[i]+1,id] <-"?"
+  }else
+  { 
+    id2<-sample(1:24,22, replace = FALSE)
+    read2[d[i],id2] <-"?"
+    read2[d[i]+1,id2] <-"?"
+  }
+}
+write.table(read2, file = "read_in90%1.txt",row.names = FALSE,quote = FALSE)
+```
+
+```{r}
+## Rate check
+ten1<-read.table("output.txt_80%3.txt", header = FALSE, sep = "",col.names = paste0("V",seq_len(24)), fill = TRUE)
+ten1<-as.data.frame(ten1)
+rowSums((readin=="?"))
+## Check how many question mark there is 
+## 102
+## The row with more question mark will have less masked rate
+read2<-readin
+colSums(read2== "?", na.rm = TRUE)
+sum(colSums(read2== "?", na.rm = TRUE))
+
+## Remove genotype that have missing rate larger than 15% in reference panel
+## Which is have rowSums((readin=="?")) more than 4
+
+id<-c(1,2,9,10,17,18,27,28,49,50,79,80)
+read2<-read2[-id,]
+read2[id,]
+##Build Truth for later checking
+Truth<-read2
+Truth<-Truth[,-1]
+##Check
+## 24 sites
+for (i in 1:24) {
+     count=0
+     summ=0
+     ## 82 rows
+     for (j in seq(1,82,by=2))
+     {  
+       k=j+1
+       if(Truth[j,i]!="?"&Truth[k,i]!="?")
+       {
+         a<-sum(as.numeric(Truth[j,i]),as.numeric(Truth[k,i]))
+         b<-sum(as.numeric(ten1[j,i]),as.numeric(ten1[k,i]))
+         if(a!=b)
+         {
+           count=count+1
+         }
+       }
+     }
+   print(count)
+}
+## 10%
+#3/984*100%=0.3%
+#3/984*100%=0.3%
+#3/984*100%=0.3%
+#3/984*100%=0.3%
+#5/984*100%=0.5%
+#1.7/5=0.34%
+
+## 20%
+# 12/984*100%=1.22%
+# 5/984*100%=0.5%
+# 10/984*100%=1.02%
+# 17/984*100%=1.73%
+# 12/984*100%=1.22%
+# 5.69/5=1.4%
+
+## 30%
+# 20/984*100%=2.03%
+# 17/984*100%=1.73%
+# 18/984*100%=1.83%
+# 19/984*100%=1.93%
+# 21/984*100%=2.13%
+# 9.65/5=1.93%
+
+## 40%
+# 24/984*100%=2.44%
+# 29/984*100%=2.95%
+# 28/984*100%=2.85%
+# 37/984*100%=3.76%
+# 29/984*100%=2.95%
+# 14.95/5=2.99%
+
+## 50%
+# 76/984*100%=7.72%
+# 50/984*100%=5.08%
+# 69/984*100%=7.01%
+# 53/984*100%=5.39%
+# 70/984*100%=7.11%
+# 32.31/5=6.462%
+
+# 60%
+# 92/984*100%=9.35%
+# 96/984*100%=9.76%
+# 73/984*100%=7.42%
+# 106/984*100%=10.78%
+# 56/984*100%=5.69%
+# 43/5=8.6%
+
+# 70%
+# 153/984*100%=15.55%
+# 90/984*100%=9.15%
+# 141/984*100%=14.3%
+# 58/984*100%=5.89%
+# 86/984*100%=8.74%
+# 53.63/5=10.73%
+
+# 80%
+# 101/984*100%=10.26%
+# 106/984*100%=10.77%
+# 72/984*100%=7.31%
+# 74/984*100%=7.52%
+# 118/984*100%=12%
+# 47.86/5=9.57%
+
+#90%
+# 136/984*100%=13.82%
+# 175/984*100%=17.78%
+# 199/984*100%=20.22%
+# 133/984*100%=13.52%
+# 104/984*100%=10.57%
+# 75.91/5=15.18%
+
+```
