@@ -8,9 +8,9 @@
 
 1. Read about fastPHASE here: Scheet, P and Stephens, M (2006). A fast and flexible statistical model for large-scale population genotype data: applications to inferring missing genotypes and haplotypic phase. Summarize this in your report. Get the fastPHASE software working and find the manual: https://faculty.washington.edu/browning/beagle/beagle.html
 
-2. Download the SeattleSNPs data: https://pga.gs.washington.edu/data_download.html . Extract the HLA region.
+2. Download the SeattleSNPs data: https://pga.gs.washington.edu/data_download.html . Extract the TNF region (included in HLA).
 
-3. For the HLA region, "mask" (i.e., hide, or remove) P = 10% of the genotypes (use whatever pattern of missingness is easiest to deal with in BEAGLE), and impute them using BEAGLE. Compare the computed values to the "ground truth" (i.e., the unhidden values). What was the percent correct for the imputation?
+3. For the TNF region, "mask" (i.e., hide, or remove) P = 10% of the genotypes (use whatever pattern of missingness is easiest to deal with in BEAGLE), and impute them using BEAGLE. Compare the computed values to the "ground truth" (i.e., the unhidden values). What was the percent correct for the imputation?
 
 4. Vary P and report percent correct for BEAGLE's imputation.
 
