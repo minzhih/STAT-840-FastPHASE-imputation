@@ -25,3 +25,5 @@ Question 1: How does accracy vary as %missing (missing at random) varies? Do som
 Question 2: How do rare variants / reference panel mismatch affect %correct?
 
 Question 3: Is there some kind of statistical method we could develop so that rare variants in the study panel can be detected? (Or more generally, if we KNOW there's a mismatch, can we do something to improve?) Maybe something can be done with the proir in a Bayseian model? Kind of like shrinkage.
+
+: ) It's a small try to investigate the research area.
