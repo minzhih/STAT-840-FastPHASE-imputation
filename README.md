@@ -22,6 +22,6 @@ Question 2: How do rare variants / reference panel mismatch affect %correct?
 Question 3: Is there some kind of statistical method we could develop so that rare variants in the study panel can be detected? (Or more generally, if we KNOW there's a mismatch, can we do something to improve?) Maybe something can be done with the proir in a Bayseian model? Kind of like shrinkage.
 
 Example report page:
-
+<img width="958" alt="Screen Shot 2022-12-23 at 4 21 38 PM" src="https://user-images.githubusercontent.com/37996767/209415041-b3dfbe0d-f4b3-4ec6-a7ac-093d0a56fbd3.png">
 
 It's a small try for me to know the research area, both the code and report could be more completed and I spotted there was an error in my data descrpbtion and HLA extraction. I extracted the TNF region in my report.  
