@@ -1,6 +1,6 @@
 # STAT-840-FastPHASE-imputation-accury-evaluation-with-SeattleSNPs-data
 
-#This project investigated the relationship between fastPHASE impu- tation accuracy and missing genotype rate in a small reference panel.
+#This project investigated the relationship between fastPHASE imputation accuracy and missing genotype rate in a small reference panel.
 
 # The orgiranl step given by Professor: Lloyd Elliott
 # Steps:
@@ -15,11 +15,13 @@
 Accuracy = % of question marks that are filled in correctly.
 
 Goals:
-
 Question 1: How does accracy vary as %missing (missing at random) varies? Do some number of replicates per %missing condition. Vary %missing from 10% to 90%. For fastPHASE? (Achieved)  
 
 Question 2: How do rare variants / reference panel mismatch affect %correct?
 
 Question 3: Is there some kind of statistical method we could develop so that rare variants in the study panel can be detected? (Or more generally, if we KNOW there's a mismatch, can we do something to improve?) Maybe something can be done with the proir in a Bayseian model? Kind of like shrinkage.
+
+Example report page:
+
 
 It's a small try for me to know the research area, both the code and report could be more completed and I spotted there was an error in my data descrpbtion and HLA extraction. I extracted the TNF region in my report.  
