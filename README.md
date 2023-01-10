@@ -28,6 +28,6 @@ Question 3: Is there some kind of statistical method we could develop so that ra
 
 Example report page:
 
-<img width="958" alt="Screen Shot 2022-12-23 at 4 21 38 PM" src="https://user-images.githubusercontent.com/37996767/209415041-b3dfbe0d-f4b3-4ec6-a7ac-093d0a56fbd3.png">
+<img width="557" alt="Screen Shot 2023-01-09 at 7 39 01 PM" src="https://user-images.githubusercontent.com/37996767/211457710-210d3659-b9cf-4b5c-b181-ccd78fd947a1.png">
 
 
