@@ -1,6 +1,6 @@
 # STAT-840-FastPHASE-imputation-accury-evaluation-with-SeattleSNPs-data
 
-#### Note :I spotted errors in my Abstract and Introduction, as well as in the Methodology part. It's a small try for me to learn about research and statistical genetics. The writing, research steps, code, and report could all be better and more complete. However, for the completeness of the report presentation, I still posted the old report.
+###Note :I spotted errors in my Abstract and Introduction, as well as in the Methodology part. It's a small try for me to learn about research and statistical genetics. The writing, research steps, code, and report could all be better and more complete. However, for the completeness of the report presentation, I still posted the old report.
 
 New report revising.
 
