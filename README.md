@@ -1,5 +1,9 @@
 # STAT-840-FastPHASE-imputation-accury-evaluation-with-SeattleSNPs-data
 
+Note :  I spotted there were errors in my Abstract and Introduction as well as in the Methodolgoy part. It's a small try for me to know the about research and statistical genetics area. The writing, research steps, code, and report currently could be all be better and more completed.
+New report revising.
+
+
 #This project investigated the relationship between fastPHASE imputation accuracy and missing genotype rate in a small reference panel. Note :  I spotted there was an error in my data descrpbtion and HLA extraction. I extracted the TNF region in my oraginal report. New report revising.
 
 # The orgiranl step given by Professor: Lloyd Elliott
@@ -25,4 +29,4 @@ Example report page:
 
 <img width="958" alt="Screen Shot 2022-12-23 at 4 21 38 PM" src="https://user-images.githubusercontent.com/37996767/209415041-b3dfbe0d-f4b3-4ec6-a7ac-093d0a56fbd3.png">
 
-It's a small try for me to know the research area, the steps, code, and report could be more completed.
+
