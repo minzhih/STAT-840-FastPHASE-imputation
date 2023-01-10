@@ -30,4 +30,5 @@ Example report page:
 
 <img width="557" alt="Screen Shot 2023-01-09 at 7 39 01 PM" src="https://user-images.githubusercontent.com/37996767/211457710-210d3659-b9cf-4b5c-b181-ccd78fd947a1.png">
 
+<img width="482" alt="Screen Shot 2023-01-09 at 7 39 15 PM" src="https://user-images.githubusercontent.com/37996767/211457823-8a1b0339-d31f-4dfa-8390-db19f3b1cc23.png">
 
