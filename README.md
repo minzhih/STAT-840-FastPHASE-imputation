@@ -1,13 +1,13 @@
-# STAT-840-FastPHASE-imputation-accury-evaluation-with-SeattleSNPs-data
+## STAT-840-FastPHASE-imputation-accury-evaluation-with-SeattleSNPs-data
 
-# Note:I spotted errors in my Abstract and Introduction, as well as in the Methodology part. It's a small try for me to learn about research and statistical genetics. The writing, research steps, code, and report could all be better and more complete. However, for the completeness of the report presentation, I still posted the old report.
+## Note:I spotted errors in my Abstract and Introduction, as well as in the Methodology part. It's a small try for me to learn about research and statistical genetics. The writing, research steps, code, and report could all be better and more complete. However, for the completeness of the report presentation, I still posted the old report.
 
 New report revising.
 
 
 #This project investigated the relationship between fastPHASE imputation accuracy and missing genotype rate in a small reference panel. Note :  I spotted there was an error in my data descrpbtion and HLA extraction. I extracted the TNF region in my oraginal report. New report revising.
 
-# The orgiranl step given by Professor: Lloyd Elliott
+## The orgiranl step given by Professor: Lloyd Elliott
 # Steps:
 1. Read about fastPHASE here: Scheet, P and Stephens, M (2006). A fast and flexible statistical model for large-scale population genotype data: applications to inferring missing genotypes and haplotypic phase. Summarize this in your report. Get the fastPHASE software working and find the manual: https://faculty.washington.edu/browning/beagle/beagle.html
 
